@@ -904,3 +904,50 @@ async function init() {
 }
 
 init();
+// 用 Leaflet 渲染在线地图 + 点位
+function renderLeafletMap(containerId, rows) {
+  // 准备容器
+  const mount = document.getElementById(containerId);
+  mount.innerHTML = '';
+  const mapDiv = document.createElement('div');
+  mapDiv.id = 'leaflet-map';
+  mapDiv.style.width = '100%';
+  mapDiv.style.height = '520px';
+  mount.appendChild(mapDiv);
+
+  // 初始化地图（OSM 瓦片）
+  const map = L.map('leaflet-map', { zoomControl: true });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap'
+  }).addTo(map);
+
+  // 加载样点（经纬度必须为数值）
+  const markers = [];
+  rows.forEach(r => {
+    const lon = Number(r.longitude), lat = Number(r.latitude);
+    if (!Number.isFinite(lon) || !Number.isFinite(lat)) return;
+
+    const html = `
+      <div style="line-height:1.5">
+        <div><b>中药材</b>：${r.HerbName ?? '-'}</div>
+        <div><b>城市/乡镇</b>：${r.city ?? '-'} / ${r.town ?? '-'}</div>
+        <div><b>采样点</b>：${r.site_name ?? '-'}</div>
+        <div><b>土壤Pb</b>：${r.soil_Pb ?? '-'}</div>
+        <div><b>药材Pb</b>：${r.herb_Pb ?? '-'}</div>
+      </div>
+    `;
+    const m = L.circleMarker([lat, lon], { radius: 5, weight: 1, fillOpacity: 0.85 });
+    m.bindPopup(html);
+    m.addTo(map);
+    markers.push(m);
+  });
+
+  // 视野自动适配
+  if (markers.length) {
+    const group = L.featureGroup(markers);
+    map.fitBounds(group.getBounds().pad(0.2));
+  } else {
+    map.setView([35, 105], 4); // 中国大致范围
+  }
+}
