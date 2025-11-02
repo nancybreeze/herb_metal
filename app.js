@@ -708,13 +708,13 @@ function renderMap() {
           <input type="radio" name="mapMode" value="online">
           在线地图(Leaflet)
         </label>
-      </div>
-      <div id="offlineMapContainer">
-        <canvas id="mapCanvas" class="map-canvas"></canvas>
-      </div>
-      <div id="onlineMapContainer" style="display: none;">
-        <div id="leafletMap"></div>
-      </div>
+     </div>
+<div id="offlineMapContainer">
+  <canvas id="mapCanvas" class="map-canvas"></canvas>
+</div>
+<!-- 在线地图容器：先隐藏，切换到“在线”时再显示 -->
+<div id="onlineMapContainer" style="width:100%; display:none;"></div>
+</div>
     </div>
   `;
 
