@@ -708,13 +708,11 @@ function renderMap() {
           <input type="radio" name="mapMode" value="online">
           在线地图(Leaflet)
         </label>
-     </div>
-<div id="offlineMapContainer">
-  <canvas id="mapCanvas" class="map-canvas"></canvas>
-</div>
-<!-- 在线地图容器：先隐藏，切换到“在线”时再显示 -->
-<div id="onlineMapContainer" style="width:100%; display:none;"></div>
-</div>
+      </div>
+      <div id="offlineMapContainer">
+        <canvas id="mapCanvas" class="map-canvas"></canvas>
+      </div>
+      <div id="onlineMapContainer" style="display:none;"></div>
     </div>
   `;
 
@@ -855,11 +853,18 @@ function renderOfflineMap(data) {
   });
 }
 
+let currentLeafletMap = null;
+
 function renderLeafletMap(containerId, rows) {
   const mount = document.getElementById(containerId);
   if (!mount) {
     console.error('容器不存在:', containerId);
     return;
+  }
+
+  if (currentLeafletMap) {
+    currentLeafletMap.remove();
+    currentLeafletMap = null;
   }
 
   mount.innerHTML = '';
@@ -874,11 +879,11 @@ function renderLeafletMap(containerId, rows) {
     return;
   }
 
-  const map = L.map('leaflet-map-instance', { zoomControl: true });
+  currentLeafletMap = L.map('leaflet-map-instance', { zoomControl: true });
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '&copy; OpenStreetMap'
-  }).addTo(map);
+  }).addTo(currentLeafletMap);
 
   const markers = [];
   rows.forEach(r => {
@@ -906,15 +911,15 @@ function renderLeafletMap(containerId, rows) {
       fillOpacity: 0.8
     });
     marker.bindPopup(popupHtml);
-    marker.addTo(map);
+    marker.addTo(currentLeafletMap);
     markers.push(marker);
   });
 
   if (markers.length > 0) {
     const group = L.featureGroup(markers);
-    map.fitBounds(group.getBounds().pad(0.2));
+    currentLeafletMap.fitBounds(group.getBounds().pad(0.2));
   } else {
-    map.setView([35, 105], 4);
+    currentLeafletMap.setView([35, 105], 4);
   }
 }
 
