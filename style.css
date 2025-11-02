@@ -484,9 +484,14 @@ tbody tr:hover {
   cursor: crosshair;
 }
 
-#leafletMap {
+#onlineMapContainer {
   width: 100%;
-  height: 600px;
+  min-height: 520px;
+}
+
+#leaflet-map-instance {
+  width: 100%;
+  height: 520px;
   border: 1px solid var(--border-color);
   border-radius: 4px;
 }

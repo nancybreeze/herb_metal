@@ -729,7 +729,7 @@ function renderMap() {
       } else {
         document.getElementById('offlineMapContainer').style.display = 'none';
         document.getElementById('onlineMapContainer').style.display = 'block';
-        renderOnlineMap(validData);
+        renderLeafletMap('onlineMapContainer', validData);
       }
     });
   });
@@ -855,11 +855,67 @@ function renderOfflineMap(data) {
   });
 }
 
-function renderOnlineMap(data) {
-  const container = document.getElementById('leafletMap');
-  container.innerHTML = '<div class="empty-state">在线地图功能需要 Leaflet 库支持。<br>当前使用离线模式，请切换到"离线经纬度散点图"。</div>';
+function renderLeafletMap(containerId, rows) {
+  const mount = document.getElementById(containerId);
+  if (!mount) {
+    console.error('容器不存在:', containerId);
+    return;
+  }
 
-  console.log('在线地图功能暂未实现，请使用离线散点图');
+  mount.innerHTML = '';
+  const mapDiv = document.createElement('div');
+  mapDiv.id = 'leaflet-map-instance';
+  mapDiv.style.width = '100%';
+  mapDiv.style.height = '520px';
+  mount.appendChild(mapDiv);
+
+  if (typeof L === 'undefined') {
+    mapDiv.innerHTML = '<div class="empty-state">Leaflet 库未加载，请刷新页面重试</div>';
+    return;
+  }
+
+  const map = L.map('leaflet-map-instance', { zoomControl: true });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap'
+  }).addTo(map);
+
+  const markers = [];
+  rows.forEach(r => {
+    const lon = Number(r.longitude);
+    const lat = Number(r.latitude);
+    if (!Number.isFinite(lon) || !Number.isFinite(lat)) return;
+
+    const popupHtml = `
+      <div style="line-height:1.5">
+        <div><b>中药材</b>：${r.HerbName || '-'}</div>
+        <div><b>城市</b>：${r.city || '-'}</div>
+        <div><b>乡镇</b>：${r.town || '-'}</div>
+        <div><b>采样点</b>：${r.site_name || '-'}</div>
+        <div><b>土壤Pb</b>：${r.soil_Pb !== null && r.soil_Pb !== undefined ? r.soil_Pb + ' mg/kg' : '-'}</div>
+        <div><b>药材Pb</b>：${r.herb_Pb !== null && r.herb_Pb !== undefined ? r.herb_Pb + ' mg/kg' : '-'}</div>
+      </div>
+    `;
+
+    const marker = L.circleMarker([lat, lon], {
+      radius: 6,
+      fillColor: '#e74c3c',
+      color: '#c0392b',
+      weight: 1,
+      opacity: 1,
+      fillOpacity: 0.8
+    });
+    marker.bindPopup(popupHtml);
+    marker.addTo(map);
+    markers.push(marker);
+  });
+
+  if (markers.length > 0) {
+    const group = L.featureGroup(markers);
+    map.fitBounds(group.getBounds().pad(0.2));
+  } else {
+    map.setView([35, 105], 4);
+  }
 }
 
 function router() {
@@ -904,50 +960,3 @@ async function init() {
 }
 
 init();
-// 用 Leaflet 渲染在线地图 + 点位
-function renderLeafletMap(containerId, rows) {
-  // 准备容器
-  const mount = document.getElementById(containerId);
-  mount.innerHTML = '';
-  const mapDiv = document.createElement('div');
-  mapDiv.id = 'leaflet-map';
-  mapDiv.style.width = '100%';
-  mapDiv.style.height = '520px';
-  mount.appendChild(mapDiv);
-
-  // 初始化地图（OSM 瓦片）
-  const map = L.map('leaflet-map', { zoomControl: true });
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; OpenStreetMap'
-  }).addTo(map);
-
-  // 加载样点（经纬度必须为数值）
-  const markers = [];
-  rows.forEach(r => {
-    const lon = Number(r.longitude), lat = Number(r.latitude);
-    if (!Number.isFinite(lon) || !Number.isFinite(lat)) return;
-
-    const html = `
-      <div style="line-height:1.5">
-        <div><b>中药材</b>：${r.HerbName ?? '-'}</div>
-        <div><b>城市/乡镇</b>：${r.city ?? '-'} / ${r.town ?? '-'}</div>
-        <div><b>采样点</b>：${r.site_name ?? '-'}</div>
-        <div><b>土壤Pb</b>：${r.soil_Pb ?? '-'}</div>
-        <div><b>药材Pb</b>：${r.herb_Pb ?? '-'}</div>
-      </div>
-    `;
-    const m = L.circleMarker([lat, lon], { radius: 5, weight: 1, fillOpacity: 0.85 });
-    m.bindPopup(html);
-    m.addTo(map);
-    markers.push(m);
-  });
-
-  // 视野自动适配
-  if (markers.length) {
-    const group = L.featureGroup(markers);
-    map.fitBounds(group.getBounds().pad(0.2));
-  } else {
-    map.setView([35, 105], 4); // 中国大致范围
-  }
-}
