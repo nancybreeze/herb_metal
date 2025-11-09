@@ -831,9 +831,7 @@ function renderOfflineMap(data) {
         <strong>${row.herb_name || '-'}</strong><br>
         城市: ${row.city || '-'}<br>
         乡镇: ${row.town || '-'}<br>
-        采样日期: ${row.collection_date || '-'}<br>
-        土壤铅: ${row.soil_Pb !== null ? row.soil_Pb : '-'} mg/kg<br>
-        药材铅: ${row.herb_Pb !== null ? row.herb_Pb : '-'} mg/kg
+        采样日期: ${row.collection_date || '-'}
       `;
       tooltip.style.display = 'block';
       tooltip.style.left = e.clientX + 10 + 'px';
@@ -892,8 +890,6 @@ function renderLeafletMap(containerId, rows) {
         <div><b>城市</b>：${r.city || '-'}</div>
         <div><b>乡镇</b>：${r.town || '-'}</div>
         <div><b>采样日期</b>：${r.collection_date || '-'}</div>
-        <div><b>土壤Pb</b>：${r.soil_Pb !== null && r.soil_Pb !== undefined ? r.soil_Pb + ' mg/kg' : '-'}</div>
-        <div><b>药材Pb</b>：${r.herb_Pb !== null && r.herb_Pb !== undefined ? r.herb_Pb + ' mg/kg' : '-'}</div>
       </div>
     `;
 
