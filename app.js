@@ -91,7 +91,7 @@ function getUniqueHerbs(data) {
   const herbMap = new Map();
 
   data.forEach(row => {
-    const name = row.HerbName;
+    const name = row.herb_name;
     if (!name) return;
 
     if (!herbMap.has(name)) {
@@ -160,10 +160,9 @@ function renderTable() {
       const term = searchTerm.toLowerCase();
       filteredData = allData.filter(row => {
         return (
-          (row.HerbName && row.HerbName.toLowerCase().includes(term)) ||
+          (row.herb_name && row.herb_name.toLowerCase().includes(term)) ||
           (row.city && row.city.toLowerCase().includes(term)) ||
-          (row.town && row.town.toLowerCase().includes(term)) ||
-          (row.site_name && row.site_name.toLowerCase().includes(term))
+          (row.town && row.town.toLowerCase().includes(term))
         );
       });
     }
@@ -210,10 +209,10 @@ function renderTable() {
     const pageData = filteredData.slice(startIdx, endIdx);
 
     const columns = [
-      { key: 'HerbName', label: '中药材名称' },
+      { key: 'herb_name', label: '中药材名称' },
       { key: 'city', label: '城市' },
       { key: 'town', label: '乡镇' },
-      { key: 'site_name', label: '采样点' },
+      { key: 'collection_date', label: '采样日期' },
       { key: 'longitude', label: '经度' },
       { key: 'latitude', label: '纬度' },
       { key: 'soil_pH', label: '土壤pH' },
@@ -250,7 +249,7 @@ function renderTable() {
         <input
           type="text"
           id="searchInput"
-          placeholder="搜索中药材名称、城市、乡镇或采样点..."
+          placeholder="搜索中药材名称、城市或乡镇..."
           value="${searchTerm}"
         />
         <span style="color: #666; margin-left: auto;">共 ${allData.length} 行</span>
@@ -333,7 +332,7 @@ function renderTable() {
 
 function renderHerbDetail(herbName) {
   const decodedName = decodeURIComponent(herbName);
-  const herbData = allData.filter(row => row.HerbName === decodedName);
+  const herbData = allData.filter(row => row.herb_name === decodedName);
 
   if (herbData.length === 0) {
     document.getElementById('app').innerHTML = `
@@ -428,7 +427,7 @@ function renderHerbDetail(herbName) {
                 <tr>
                   <th>城市</th>
                   <th>乡镇</th>
-                  <th>采样点</th>
+                  <th>采样日期</th>
                   <th>经度</th>
                   <th>纬度</th>
                   <th>土壤铅(mg/kg)</th>
@@ -442,7 +441,7 @@ function renderHerbDetail(herbName) {
                   <tr>
                     <td>${row.city || '-'}</td>
                     <td>${row.town || '-'}</td>
-                    <td>${row.site_name || '-'}</td>
+                    <td>${row.collection_date || '-'}</td>
                     <td>${row.longitude !== null ? row.longitude : '-'}</td>
                     <td>${row.latitude !== null ? row.latitude : '-'}</td>
                     <td>${row.soil_Pb !== null ? row.soil_Pb : '-'}</td>
@@ -553,7 +552,7 @@ function generateBarChart(indicator, selectedHerbs) {
   const chartData = [];
 
   selectedHerbs.forEach(herbName => {
-    const herbRows = allData.filter(row => row.HerbName === herbName);
+    const herbRows = allData.filter(row => row.herb_name === herbName);
     const values = herbRows.map(row => row[indicator]).filter(v => v !== null && v !== undefined && !isNaN(v));
 
     if (values.length > 0) {
@@ -833,10 +832,10 @@ function renderOfflineMap(data) {
     if (found) {
       const row = found.data;
       tooltip.innerHTML = `
-        <strong>${row.HerbName || '-'}</strong><br>
+        <strong>${row.herb_name || '-'}</strong><br>
         城市: ${row.city || '-'}<br>
         乡镇: ${row.town || '-'}<br>
-        采样点: ${row.site_name || '-'}<br>
+        采样日期: ${row.collection_date || '-'}<br>
         土壤铅: ${row.soil_Pb !== null ? row.soil_Pb : '-'} mg/kg<br>
         药材铅: ${row.herb_Pb !== null ? row.herb_Pb : '-'} mg/kg
       `;
@@ -893,10 +892,10 @@ function renderLeafletMap(containerId, rows) {
 
     const popupHtml = `
       <div style="line-height:1.5">
-        <div><b>中药材</b>：${r.HerbName || '-'}</div>
+        <div><b>中药材</b>：${r.herb_name || '-'}</div>
         <div><b>城市</b>：${r.city || '-'}</div>
         <div><b>乡镇</b>：${r.town || '-'}</div>
-        <div><b>采样点</b>：${r.site_name || '-'}</div>
+        <div><b>采样日期</b>：${r.collection_date || '-'}</div>
         <div><b>土壤Pb</b>：${r.soil_Pb !== null && r.soil_Pb !== undefined ? r.soil_Pb + ' mg/kg' : '-'}</div>
         <div><b>药材Pb</b>：${r.herb_Pb !== null && r.herb_Pb !== undefined ? r.herb_Pb + ' mg/kg' : '-'}</div>
       </div>
