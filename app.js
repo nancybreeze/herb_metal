@@ -280,13 +280,13 @@ function renderTable() {
           <div class="pagination">
             <button id="firstPage" ${currentPage === 1 ? 'disabled' : ''}>首页</button>
             <button id="prevPage" ${currentPage === 1 ? 'disabled' : ''}>上一页</button>
-            <span style="display: flex; align-items: center; gap: 8px;">
-              第 ${currentPage} / ${totalPages} 页（共 ${filteredData.length} 条记录）
-              <span style="margin-left: 10px;">跳转到</span>
+            <span>第 ${currentPage} / ${totalPages} 页（共 ${filteredData.length} 条记录）</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span>跳转到</span>
               <input type="number" id="pageInput" min="1" max="${totalPages}" value="${currentPage}"
-                     style="width: 60px; padding: 4px 8px; border: 1px solid #ddd; border-radius: 4px; text-align: center;">
-              <button id="goToPage">跳转</button>
-            </span>
+                     style="width: 60px; padding: 4px 8px; border: 1px solid #ddd; border-radius: 4px; text-align: center; font-size: 14px;">
+              <button id="goToPage" style="padding: 4px 12px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;">跳转</button>
+            </div>
             <button id="nextPage" ${currentPage === totalPages ? 'disabled' : ''}>下一页</button>
             <button id="lastPage" ${currentPage === totalPages ? 'disabled' : ''}>末页</button>
           </div>

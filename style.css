@@ -241,6 +241,7 @@ tbody tr:hover {
   gap: 1rem;
   padding: 1.5rem;
   background: white;
+  flex-wrap: wrap;
 }
 
 .pagination button {
@@ -250,6 +251,7 @@ tbody tr:hover {
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s;
+  white-space: nowrap;
 }
 
 .pagination button:hover:not(:disabled) {
@@ -265,6 +267,13 @@ tbody tr:hover {
 
 .pagination span {
   color: #666;
+  white-space: nowrap;
+}
+
+.pagination #goToPage:hover {
+  background-color: var(--secondary-color);
+  color: white;
+  border-color: var(--secondary-color);
 }
 
 .detail-page {
