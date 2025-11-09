@@ -132,12 +132,6 @@ function renderHome() {
               <strong>采样点数量：</strong>
               <span>${herb.count}</span>
             </span>
-            <span>
-              <strong>坐标信息：</strong>
-              <span class="badge ${herb.hasCoordinates ? 'badge-success' : 'badge-warning'}">
-                ${herb.hasCoordinates ? '齐全' : '缺失'}
-              </span>
-            </span>
           </div>
         </div>
       `).join('')}
