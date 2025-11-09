@@ -278,9 +278,17 @@ function renderTable() {
         </div>
         ${filteredData.length > 0 ? `
           <div class="pagination">
+            <button id="firstPage" ${currentPage === 1 ? 'disabled' : ''}>首页</button>
             <button id="prevPage" ${currentPage === 1 ? 'disabled' : ''}>上一页</button>
-            <span>第 ${currentPage} / ${totalPages} 页（共 ${filteredData.length} 条记录）</span>
+            <span style="display: flex; align-items: center; gap: 8px;">
+              第 ${currentPage} / ${totalPages} 页（共 ${filteredData.length} 条记录）
+              <span style="margin-left: 10px;">跳转到</span>
+              <input type="number" id="pageInput" min="1" max="${totalPages}" value="${currentPage}"
+                     style="width: 60px; padding: 4px 8px; border: 1px solid #ddd; border-radius: 4px; text-align: center;">
+              <button id="goToPage">跳转</button>
+            </span>
             <button id="nextPage" ${currentPage === totalPages ? 'disabled' : ''}>下一页</button>
+            <button id="lastPage" ${currentPage === totalPages ? 'disabled' : ''}>末页</button>
           </div>
         ` : ''}
       </div>
@@ -318,6 +326,48 @@ function renderTable() {
         if (currentPage < totalPages) {
           currentPage++;
           renderTableContent();
+        }
+      });
+    }
+
+    const firstBtn = document.getElementById('firstPage');
+    if (firstBtn) {
+      firstBtn.addEventListener('click', () => {
+        currentPage = 1;
+        renderTableContent();
+      });
+    }
+
+    const lastBtn = document.getElementById('lastPage');
+    if (lastBtn) {
+      lastBtn.addEventListener('click', () => {
+        currentPage = totalPages;
+        renderTableContent();
+      });
+    }
+
+    const goToPageBtn = document.getElementById('goToPage');
+    const pageInput = document.getElementById('pageInput');
+    if (goToPageBtn && pageInput) {
+      goToPageBtn.addEventListener('click', () => {
+        const targetPage = parseInt(pageInput.value);
+        if (targetPage >= 1 && targetPage <= totalPages) {
+          currentPage = targetPage;
+          renderTableContent();
+        } else {
+          alert(`请输入 1 到 ${totalPages} 之间的页码`);
+        }
+      });
+
+      pageInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          const targetPage = parseInt(pageInput.value);
+          if (targetPage >= 1 && targetPage <= totalPages) {
+            currentPage = targetPage;
+            renderTableContent();
+          } else {
+            alert(`请输入 1 到 ${totalPages} 之间的页码`);
+          }
         }
       });
     }
