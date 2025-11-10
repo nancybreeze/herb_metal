@@ -543,6 +543,7 @@ function renderCompare() {
       </div>
       <div class="control-group">
         <label>选择中药材：</label>
+        <button id="selectAllHerbs" style="margin-left: 10px; padding: 4px 12px; border: 1px solid #3498db; background: white; color: #3498db; border-radius: 4px; cursor: pointer;">全选</button>
         <div class="checkbox-group" id="herbCheckboxes">
           ${herbNames.map(name => `
             <label>
@@ -577,6 +578,18 @@ function renderCompare() {
   `;
 
   document.getElementById('app').innerHTML = html;
+
+  document.getElementById('selectAllHerbs').addEventListener('click', () => {
+    const checkboxes = document.querySelectorAll('#herbCheckboxes input[type="checkbox"]');
+    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+
+    checkboxes.forEach(cb => {
+      cb.checked = !allChecked;
+    });
+
+    const btn = document.getElementById('selectAllHerbs');
+    btn.textContent = allChecked ? '全选' : '取消全选';
+  });
 
   document.getElementById('generateChart').addEventListener('click', () => {
     const indicator = document.getElementById('indicatorSelect').value;
