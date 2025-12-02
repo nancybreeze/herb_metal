@@ -3,9 +3,9 @@ let currentRoute = '';
 
 async function loadCSV() {
   try {
-    const response = await fetch('data.csv');
+    const response = await fetch('20251130herb_metal.csv');
     if (!response.ok) {
-      throw new Error('无法加载 data.csv 文件');
+      throw new Error('无法加载 20251130herb_metal.csv 文件');
     }
     const text = await response.text();
     return parseCSV(text);
@@ -1009,7 +1009,7 @@ async function init() {
       <div class="error">
         <h3>加载失败</h3>
         <p>${error.message}</p>
-        <p>请确保 data.csv 文件与 index.html 在同一目录下。</p>
+        <p>请确保 20251130herb_metal.csv 文件与 index.html 在同一目录下。</p>
       </div>
     `;
   }
